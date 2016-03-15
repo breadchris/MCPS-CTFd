@@ -22,8 +22,14 @@
                 </div>
                 <div class="modal-body">
                     <form method="POST" action="/admin/chal/new" enctype="multipart/form-data">
-                        <input type='text' name='name' placeholder='Name'><br/>
-                        <input type='text' name='category' placeholder='Category'><br/>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" name="name" placeholder="Enter challenge name">
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <input type="text" class="form-control" name="category" placeholder="Enter challenge category">
+                        </div>
 
                         <ul id="new-desc-edit" class="tabs" data-tab>
                             <li class="tab-title active"><a href="#new-desc-write" style="padding: 0 2rem;">Write</a></li>

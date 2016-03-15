@@ -1,0 +1,40 @@
+from CTFd.models import db, Evidence, EvidenceConnection
+
+db.init_app(app)
+db.create_all()
+
+police_report = Evidence("report")
+phone = Evidence("phone")
+drone = Evidence("drone")
+guesture_file = Evidence("guesture.key")
+bitcoin_wallet = Evidence("wallet.txt")
+encrypted_video = Evidence("enc.mp4")
+hacktivist_site = Evidence("8.8.8.8")
+company_site = Evidence("127.0.0.1")
+
+db.session.add(police_report)
+db.session.add(guesture_file)
+db.session.add(bitcoin_wallet)
+db.session.add(encrypted_video)
+db.session.add(hacktivist_site)
+db.session.add(company_site)
+db.session.commit()
+db.session.flush()
+
+x0 = EvidenceConnection(police_report.eid, phone.eid)
+x1 = EvidenceConnection(phone.eid, guesture_file.eid)
+x2 = EvidenceConnection(guesture_file.eid, bitcoin_wallet.eid)
+x3 = EvidenceConnection(guesture_file.eid, hacktivist_site.eid)
+x4 = EvidenceConnection(guesture_file.eid, company_site.eid)
+x4 = EvidenceConnection(drone.eid, encrypted_video.eid)
+x5 = EvidenceConnection(police_report.eid, drone.eid)
+
+db.session.add(x0)
+db.session.add(x1)
+db.session.add(x2)
+db.session.add(x3)
+db.session.add(x4)
+db.session.add(x5)
+db.session.commit()
+db.session.flush()
+

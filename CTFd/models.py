@@ -1,4 +1,5 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import DatabaseError
 
 from socket import inet_aton, inet_ntoa
 from struct import unpack, pack
@@ -8,11 +9,14 @@ import datetime
 import hashlib
 import json
 
+
 def sha512(string):
     return hashlib.sha512(string).hexdigest()
 
+
 def ip2long(ip):
     return unpack('!I', inet_aton(ip))[0]
+
 
 def long2ip(ip_int):
     return inet_ntoa(pack('!I', ip_int))
@@ -32,11 +36,12 @@ class Pages(db.Model):
     def __repr__(self):
         return "<Tag {0} for challenge {1}>".format(self.tag, self.chal)
 
+
 class Challenges(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
     description = db.Column(db.Text)
-    value = db.Column(db.Integer) 
+    value = db.Column(db.Integer)
     category = db.Column(db.String(80))
     flags = db.Column(db.Text)
     hidden = db.Column(db.Boolean)
@@ -51,6 +56,7 @@ class Challenges(db.Model):
     def __repr__(self):
         return '<chal %r>' % self.name
 
+
 class Tags(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     chal = db.Column(db.Integer, db.ForeignKey('challenges.id'))
@@ -63,6 +69,7 @@ class Tags(db.Model):
     def __repr__(self):
         return "<Tag {0} for challenge {1}>".format(self.tag, self.chal)
 
+
 class Files(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     chal = db.Column(db.Integer, db.ForeignKey('challenges.id'))
@@ -74,6 +81,7 @@ class Files(db.Model):
 
     def __repr__(self):
         return "<File {0} for challenge {1}>".format(self.location, self.chal)
+
 
 class Keys(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -130,24 +138,23 @@ class Teams(db.Model):
         except ValueError:
             return 0
 
+
 class Solves(db.Model):
-    __table_args__ = (db.UniqueConstraint('chalid', 'teamid'), {})
+    __table_args__ = (db.UniqueConstraint('eid', 'teamid'), {})
     id = db.Column(db.Integer, primary_key=True)
-    chalid = db.Column(db.Integer, db.ForeignKey('challenges.id'))
+    eid = db.Column(db.Integer, db.ForeignKey('evidence.eid'))
     teamid = db.Column(db.Integer, db.ForeignKey('teams.id'))
     ip = db.Column(db.Integer)
     flag = db.Column(db.Text)
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     team = db.relationship('Teams', foreign_keys="Solves.teamid", lazy='joined')
-    chal = db.relationship('Challenges', foreign_keys="Solves.chalid", lazy='joined')
-    # value = db.Column(db.Integer) 
+    chal = db.relationship('Evidence', foreign_keys="Solves.eid", lazy='joined')
 
-    def __init__(self, chalid, teamid, ip, flag):
+    def __init__(self, eid, teamid, ip, flag):
         self.ip = ip2long(ip)
-        self.chalid = chalid
+        self.eid = eid
         self.teamid = teamid
         self.flag = flag
-        # self.value = value
 
     def __repr__(self):
         return '<solves %r>' % self.chal
@@ -192,3 +199,43 @@ class Config(db.Model):
     def __init__(self, key, value):
         self.key = key
         self.value = value
+
+class Evidence(db.Model):
+    eid = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text)
+    flag = db.Column(db.Text)
+
+    def __init__(self, name, flag):
+        self.name = name
+        self.flag = flag
+
+class EvidenceConnection(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    had = db.Column(db.Integer, db.ForeignKey('evidence.eid'))
+    found = db.Column(db.Integer, db.ForeignKey('evidence.eid'))
+
+    def __init__(self, had, found):
+        self.had = had
+        self.found = found
+
+class TeamEvidence(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    teamid = db.Column(db.Integer, db.ForeignKey('teams.id'))
+    name = db.Column(db.Text)
+    type = db.Column(db.Integer)
+
+    def __init__(self, teamid, name, type):
+        self.teamid = teamid
+        self.name = name
+        self.type = type
+
+class TeamEvidenceConnection(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    teamid = db.Column(db.Integer, db.ForeignKey('teams.id'))
+    had = db.Column(db.Integer, db.ForeignKey('evidence.eid'))
+    found = db.Column(db.Integer, db.ForeignKey('evidence.eid'))
+
+    def __init__(self, teamid, had, found):
+        self.teamid = teamid
+        self.had = had
+        self.found = found

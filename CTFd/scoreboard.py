@@ -4,7 +4,7 @@ from CTFd.models import db, Teams, Solves, Challenges
 
 scoreboard = Blueprint('scoreboard', __name__)
 
-
+'''
 @scoreboard.route('/scoreboard')
 def scoreboard_view():
     score = db.func.sum(Challenges.value).label('score')
@@ -48,3 +48,4 @@ def topteams(count):
             json['scores'][team.name].append({'id':x.teamid, 'chal':x.chalid, 'team':x.teamid, 'value': x.chal.value, 'time':unix_time(x.date)})
 
     return jsonify(json)
+'''

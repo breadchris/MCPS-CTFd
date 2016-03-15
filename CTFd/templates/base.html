@@ -33,7 +33,6 @@
               <li><a href="/{{ page.route }}">{{ page.route|title }}</a></li>
             {% endfor %}
             <li><a href="/teams">Teams</a></li>
-            <li><a href="/scoreboard">Scoreboard</a></li>
             <li><a href="/challenges">Challenges</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
@@ -41,7 +40,6 @@
             {% if admin %}
             <li><a href="/admin">Admin</a></li>
             {% endif %}
-            <li><a href="/team/{{ id }}">Team</a></li>
             <li><a href="/profile">Profile</a></li>
             <li><a href="/logout">Logout</a></li>
           {% else %}

@@ -1,6 +1,6 @@
 from flask import current_app as app, render_template, render_template_string, request, redirect, abort, jsonify, json as json_mod, url_for, session, Blueprint, Response
 from CTFd.utils import authed, ip2long, long2ip, is_setup, validate_url, get_config, sha512
-from CTFd.models import db, Teams, Solves, Challenges, WrongKeys, Keys, Tags, Files, Tracking, Pages, Config
+from CTFd.models import db, Teams, Solves, Challenges, WrongKeys, Keys, Tags, Files, Tracking, Pages, Config, Evidence, EvidenceConnection
 
 from jinja2.exceptions import TemplateNotFound
 from passlib.hash import bcrypt_sha256
@@ -40,7 +40,7 @@ def redirect_setup():
     if request.path == "/static/css/style.css":
         return
     if not is_setup() and request.path != "/setup":
-        return redirect('/setup')
+        return redirect(url_for('views.setup'))
 
 
 @views.route('/setup', methods=['GET', 'POST'])
@@ -85,6 +85,59 @@ def setup():
             prevent_registration = Config('prevent_registration', None)
 
             setup = Config('setup', True)
+
+            evidence = [
+                ["police_profile", "Police Profile", "{and_so_1t_begins}"],
+                ["victims_phone", "Victims Phone", "{they_were_to0_young_to_d1e}"],
+                ["sd_card", "SD Card", "{sorry_1_dr0ned_out_there}"],
+                ["encrypted_video", "Encrypted Video", "{d3leted_but_not_forgotton}"],
+                ["contacts", "Contacts", "{lol_im_not_a_contact}"],
+                ["agents_wallet", "Agents Wallet", "{h3_h3_m3_c01n5_1n_B175}"],
+                ["emails", "Emails", "{7his_15_n0t_th3_3m41l_u_w4nt}"],
+                ["browser_history", "Browser History", "{a1ways_d3l3t3_ma_h1story}"],
+                ["hacktivists_website", "Hacktivist's Website", "{t3h_h4ckers_sp4c3}"],
+                ["consulting_company_it_portal", "Consulting Company IT Portal", "{SYS_4DM11111111N_P0RTAAAAL}"],
+                ["hacktivists_login", "Hacktivist Login", "{h4ck3r5_log1n_700}"],
+                ["voting_database_corrupt", "Voting Database", "{17_corrup73d_:-(}"],
+                ["personnel_database", "Personnel Database", "{4uthor1zed_per50nnel_0nly}"],
+                ["hacktivists_pcap", "Hacktivist's PCAP", "{much_sh3llsh0ck_m4ny_pack3t_7oo_FTP}"],
+                ["seeded_torrent", "Seeded Torrent", "{7ooo_much_70rren71ng_b4d_four_health}"],
+                ["irc_logs", "IRC Logs", "{700_much_3ncrypted_1337_sp3ak}"],
+                ["stolen_personnel_database", "Stolen Personnel Database", "{h3y_d4ts_min3}"],
+                ["stolen_voting_database", "Stolen Voting Database", "{h33333y_d4ts_min3_7oo}"],
+                ["proof_of_bitcoin_transfer", "Proof of Bitcoin Transfer", "{h4_c4ught_u_r3d_handed}"],
+                ["decryption_software", "Decryption Software", "{d3kryptioni3_is_700_g00d}"]
+            ]
+
+            for e in evidence:
+                exec "{0} = Evidence(\"{1}\", \"{2}\")".format(e[0], e[1], e[2])
+                db.session.add(eval(e[0]))
+            db.session.commit()
+
+            connections = [
+                [police_profile, victims_phone],
+                [police_profile, sd_card],
+                [victims_phone, agents_wallet],
+                [victims_phone, emails],
+                [victims_phone, browser_history],
+                [victims_phone, contacts],
+                [browser_history, hacktivists_website],
+                [browser_history, consulting_company_it_portal],
+                [hacktivists_website, hacktivists_login],
+                [hacktivists_login, seeded_torrent],
+                [hacktivists_login, irc_logs],
+                [seeded_torrent, stolen_personnel_database],
+                [seeded_torrent, stolen_voting_database],
+                [seeded_torrent, hacktivists_pcap],
+                [irc_logs, seeded_torrent],
+                [consulting_company_it_portal, voting_database_corrupt],
+                [consulting_company_it_portal, personnel_database]
+            ]
+
+            for c in connections:
+                c = [_.eid for _ in c]
+                db.session.add(EvidenceConnection(*c))
+            db.session.commit()
 
             db.session.add(ctf_name)
             db.session.add(admin)
@@ -138,6 +191,7 @@ def teams(page):
     pages = int(count / results_per_page) + (count % results_per_page > 0)
     return render_template('teams.html', teams=teams, team_pages=pages)
 
+'''
 @views.route('/team/<teamid>', methods=['GET', 'POST'])
 def team(teamid):
     user = Teams.query.filter_by(id=teamid).first()
@@ -153,7 +207,7 @@ def team(teamid):
         for x in solves:
             json['solves'].append({'id':x.id, 'chal':x.chalid, 'team':x.teamid})
         return jsonify(json)
-
+'''
 
 @views.route('/profile', methods=['POST', 'GET'])
 def profile():
@@ -207,7 +261,7 @@ def profile():
                 team.country = country
                 db.session.commit()
                 db.session.close()
-                return redirect('/profile')
+                return redirect(url_for('views.profile'))
         else:
             user = Teams.query.filter_by(id=session['id']).first()
             name = user.name
@@ -219,4 +273,4 @@ def profile():
             return render_template('profile.html', name=name, email=email, website=website, affiliation=affiliation,
                                    country=country, prevent_name_change=prevent_name_change)
     else:
-        return redirect('/login')
+        return redirect(url_for('auth.login'))

@@ -1,132 +1,223 @@
 {% extends "base.html" %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.0/c3.min.css">
-    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.0/isotope.pkgd.min.js">
-    <link rel="stylesheet" href="/static/css/modal.css">
-    <link rel="stylesheet" href="/static/css/input.css">
 <style>
-    .alert {display: none}
-    .category-header {text-align: center}
-    .challenge-wrapper {padding: 5px}
-    .challenge-button {width: 100%}
-    .submit-row {padding-top: 0px}
-    #submit-key {padding: 10px 20px}
-    .disabled-button {background-color: #EEEEEE}
 
-    .file-row {margin: 15px 0px; padding-left: 5px; padding-right: 5px;}
-    .file-button {text-decoration: none; color: #fff;}
-    .file-button:hover {text-decoration: none; color: #fff;}
-    .file-wrapper {padding: 20px; transition: all 0.5s ease; cursor: pointer; color: #fff;}
-    .file-button {cursor: pointer;}
+.node {
+  cursor: pointer;
+  stroke: #000;
+  stroke-width: 1px;
+}
 
-    .close-text {color: #ccc;position: relative;top: -25px;right: -15px;cursor: pointer;}
-    .chal-desc {padding-left: 40px;padding-right: 40px;}
-    .key-submit {padding-top: 14px;}
-    .notification-row {padding-left: 45px;padding-right: 45px;}
-    .input {padding-right: 30px;}
+.link {
+  fill: none;
+  stroke: #9ecae1;
+  stroke-width: 8px;
+}
+
+.node text {
+  pointer-events: none;
+  font: 10px sans-serif;
+  font-size: 20px;
+}
+
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="jumbotron home">
-    <div class="container">
-        <h1>Challenges</h1>
-    </div>
-</div>
-<div class="container main-container">
-    <div id='challenges-board' class="row">
-    </div>
-    <div id="solves-graph" style="width: 90%; height: 400px; margin: 0 auto"></div>
-</div>
-
-<div id="chal-window" class="dialog">
-    <div class="dialog__overlay"></div>
-    <div class="dialog__content">
-        <div class="morph-shape">
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 560 280" preserveAspectRatio="none">
-                <rect x="3" y="3" fill="none" width="556" height="276"/>
-            </svg>
-        </div>
-        <div class="dialog-inner">
-            <div class="pull-right"><p class="close-text" data-dialog-close>Close</p></div>
-            <div class="row">
-                <div role="tabpanel">
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#challenge" aria-controls="challenge" role="tab">Challenge</a></li>
-                        <li role="presentation"><a href="#solves" aria-controls="solves" class="chal-solves" role="tab"></a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane active" id="challenge">
-                            <h3 class='chal-name'></h3>
-                            <h4 class="chal-value"></h4>
-                            <p class="chal-desc"></p>
-                            <div class="chal-files file-row row">
-                            </div>
-
-                            <div class="row submit-row">
-                                <div class="col-md-9">
-                                    <span class="input">
-                                        <input class="input-field" type="text" name="answer" id="answer-input" placeholder="Key" />
-                                    </span>
-                                    <input type="hidden" id="nonce" name="nonce" value={{ nonce }}>
-                                    <input id="chal-id" type="hidden">
-                                </div>
-                                <div class="col-md-3 key-submit">
-                                    <button type="submit" id="submit-key" tabindex="5" class="btn btn-md btn-theme btn-outlined pull-right">Submit</button>
-                                </div>
-                            </div>
-                            <div class="row notification-row">
-                                <div id="incorrect-key" class="alert alert-danger alert-dismissable" role="alert">
-                                  <strong>Incorrect</strong>
-                                </div>
-                                <div id="correct-key" class="alert alert-success alert-dismissable" role="alert">
-                                  <strong>Correct</strong>
-                                </div>
-                                <div id="already-solved" class="alert alert-info alert-dismissable" role="alert">
-                                  <strong>You already solved this</strong>
-                                </div>
-                                <div id="too-fast" class="alert alert-warning alert-dismissable" role="alert">
-                                  <strong>You're submitting keys too fast. Slow down.</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div role="tabpanel" class="tab-pane" id="solves">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <td><b>Name</b>
-                                        </td>
-                                        <td><b>Date</b>
-                                        </td>
-                                    </tr>
-                                </thead>
-                                <tbody id="chal-solves-names">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="row">
+  <div class="col-md-4">
+  <div style="margin-left:50px;margin-top: 50px">
+  <div>
+      <h3>View Evidence</h3>
+      <div></div>
+  </div>
+  <form method="POST" id="add-evidence">
+      <h3>Enter Evidence Name or Flag</h3>
+      <div class="form-group">
+        <label for="flag">Evidence Name/Flag:</label>
+        <input type="text" name="flag"></input>
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+  </form>
+  <br />
+  <form method="POST" id="remove-evidence">
+      <h3>Remove Evidence</h3>
+      <div class="form-group">
+        <label for="evidence-name">Remove Evidence:</label>
+        <input type="text" name="evidence-name"></input>
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+  </form>
+  <br />
+  <form method="POST" id="add-connection">
+      <h3>Enter Evidence Connection</h3>
+      <div class="form-group">
+        <label for="evidence-name1">Evidence Name 1:</label>
+        <input type="text" name="evidence-name1"></input>
+      </div>
+      <div class="form-group">
+        <label for="evidence-name2">Evidence Name 2:</label>
+        <input type="text" name="evidence-name2"></input>
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+  </form>
+  </div>
+  </div>
+  <div class="col-md-8">
+    <div id="graph"></div>
+  </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.0/c3.min.js"></script>
-    <script src="/static/js/chalboard.js"></script>
-    <script src="/static/js/classie.js"></script>
-    <script src="/static/js/modal.js"></script>
-    <script src="/static/js/input.js"></script>
-    <script>
-    $('[data-dialog-close]').click(function() {
-        $('.nav-tabs > li:nth-child(1)').addClass("active");
-        $('.nav-tabs > li:nth-child(2)').removeClass("active");
-        openDialog.toggle();
-        window.location.hash = ""
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script>
+
+var load_graph;
+
+function view_challenge(chal_name) {
+  $.get(chal)
+}
+
+$( "form" ).submit(function( event ) {
+  var ele_id = $(this).attr("id");
+  var $this = $(this);
+  if (ele_id == "add-evidence") {
+    var flag = $this.find('[name="flag"]').val();
+    $.post("/addevidence", {"flag": flag}).done(function(data) {
+      data = JSON.parse(data);
+      if (data["error"] === undefined) {
+        alert("Nice! Your flag was submitted sucessfully :)");
+        load_graph();
+      } else {
+        if (data["confirm"] !== undefined) {
+          o = confirm("You did not submit a valid flag, would you like to add this as evidence anyways?");
+          if (o) {
+            $.post("/confirmevidence", {"flag": flag}).done(function(data) {
+              data = JSON.parse(data);
+              if (data["error"] === undefined) {
+                alert("Nice! Your evidence was submitted sucessfully :)");
+                load_graph();
+              } else {
+                alert(data["error"]);
+              }
+            });
+          }
+        } else {
+          alert(data["error"]);
+        }
+      }
     });
-    </script>
+  } else if (ele_id == "remove-evidence") {
+    $.post("/removeevidence", {"evidence-name": $this.find('[name="evidence-name"]').val()}).done(function(data) {
+      data = JSON.parse(data);
+      if (data["error"] === undefined) {
+        alert("Your evidence was removed");
+        load_graph();
+      } else {
+        alert(data["error"]);
+      }
+    });
+  } else if (ele_id == "add-connection") {
+    $.post("/addconnection", {"evidence-name1": $this.find('[name="evidence-name1"]').val(), "evidence-name2": $this.find('[name="evidence-name2"]').val()}).done(function(data) {
+        data = JSON.parse(data);
+        if (data["error"] === undefined) {
+          alert("Your evidence connection was made :3");
+          load_graph();
+        } else {
+          alert(data["error"]);
+        }
+    });
+  }
+  event.preventDefault();
+});
+
+window.onload = function() {
+
+load_graph = function() {
+  $("#graph").empty();
+  var width = 900,
+      height = 750;
+
+  var svg = d3.select("#graph").append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+  var force = d3.layout.force()
+      .gravity(0.03)
+      .distance(150)
+      .charge(-300)
+      .size([width, height]);
+
+  function link_click(d) {
+    console.log("Clicked");
+  }
+
+  // Toggle children on click.
+  function click(d) {
+    if (!d3.event.defaultPrevented) {
+      if (d.children) {
+        d._children = d.children;
+        d.children = null;
+      } else {
+        d.children = d._children;
+        d._children = null;
+      }
+      //update();
+    }
+  }
+
+  function color(d) {
+    return d.group == 1 ? "#3182bd" :  "#c6dbef";
+  }
+
+  d3.json("/getevidence", function(error, json) {
+    if (error) throw error;
+
+    force
+        .nodes(json.nodes)
+        .links(json.links)
+        .start();
+
+    var link = svg.selectAll(".link")
+        .data(json.links)
+      .enter().append("line")
+        .attr("class", "link")
+        .on("click", link_click);
+
+    var node = svg.selectAll(".node")
+        .data(json.nodes)
+      .enter().append("g")
+        .attr("class", "node")
+        .call(force.drag);
+
+    node.append("circle")
+        .attr("class", "node")
+        .attr("x", function(d) { return -8; })
+        .attr("y", function(d) { return -8; })
+        .attr("r", function(d) { return 12;})
+        .style("fill", color)
+        .on("click", click)
+        .call(force.drag);
+
+    node.append("text")
+        .attr("dx", 18)
+        .attr("dy", ".34em")
+        .text(function(d) { return d.name });
+
+    force.on("tick", function() {
+      link.attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
+
+      node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    });
+  });
+}
+load_graph();
+};
+
+</script>
 {% endblock %}

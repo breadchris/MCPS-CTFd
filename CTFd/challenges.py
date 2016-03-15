@@ -1,7 +1,9 @@
 from flask import current_app as app, render_template, request, redirect, abort, jsonify, json as json_mod, url_for, session, Blueprint
 
 from CTFd.utils import ctftime, view_after_ctf, authed, unix_time, get_kpm, can_view_challenges, is_admin, get_config
-from CTFd.models import db, Challenges, Files, Solves, WrongKeys, Keys
+from CTFd.models import db, Challenges, Files, Solves, WrongKeys, Keys, Evidence, EvidenceConnection, TeamEvidence, TeamEvidenceConnection
+
+from sqlalchemy import or_, and_
 
 import time
 import re
@@ -22,8 +24,143 @@ def challenges_view():
     if can_view_challenges():
         return render_template('chals.html', ctftime=ctftime())
     else:
-        return redirect('/login')
+        return redirect(url_for('auth.login', next='challenges'))
 
+@challenges.route('/getevidence', methods=['GET'])
+def getevidence():
+    data = {"nodes":[], "links":[]}
+
+    evidence = TeamEvidence.query.filter_by(teamid=session['id']).all()
+    for e in evidence:
+        data["nodes"].append({"name": e.name, "group": e.type})
+
+    connections = TeamEvidenceConnection.query.filter_by(teamid=session['id']).all()
+    for c in connections:
+        src_idx = -1
+        dst_idx = -1
+        for n, e in enumerate(evidence):
+            if e.id == c.had:
+                src_idx = n
+            elif e.id == c.found:
+                dst_idx = n
+        if src_idx != -1 and dst_idx != -1:
+            data["links"].append({"source": src_idx, "target": dst_idx, "value": 10})
+
+    return json.dumps(data)
+
+@challenges.route('/addevidence', methods=['POST'])
+def addevidence():
+    if not ctftime():
+        if view_after_ctf():
+            pass
+        else:
+            return redirect('/')
+
+    error = {}
+    if 'flag' in request.form.keys():
+        flag = str(request.form['flag'])
+        submitted_flags = TeamEvidence.query.filter_by(teamid=session['id'], name=flag).first()
+        actual_flags = Evidence.query.filter_by(flag=flag).first()
+
+        if submitted_flags != None:
+            error["error"] = "Already submitted flag"
+        elif actual_flags == None:
+            error["error"] = "Incorrect flag given"
+            error["confirm"] = "confirm"
+        else:
+            new_evidence = TeamEvidence(session["id"], actual_flags.name, 1)
+            db.session.add(new_evidence)
+            db.session.commit()
+    else:
+        error["error"] = "No name or flag given"
+
+    return json.dumps(error)
+
+@challenges.route('/confirmevidence', methods=['POST'])
+def confirmevidence():
+    if not ctftime():
+        if view_after_ctf():
+            pass
+        else:
+            return redirect('/')
+
+    error = {}
+    if 'flag' in request.form.keys():
+        flag = str(request.form['flag'])
+        submitted_flags = TeamEvidence.query.filter_by(teamid=session['id'], name=flag).first()
+
+        if submitted_flags != None:
+            error["error"] = "Already submitted evidence"
+        else:
+            db.session.add(TeamEvidence(session["id"], flag, 2))
+            db.session.commit()
+    else:
+        error["error"] = "No name or flag given"
+
+    return json.dumps(error)
+
+@challenges.route('/removeevidence', methods=['POST'])
+def removeevidence():
+    if not ctftime():
+        if view_after_ctf():
+            pass
+        else:
+            return redirect('/')
+    error = {}
+    if 'evidence-name' in request.form.keys():
+        evidence_name = str(request.form['evidence-name'])
+        submitted_flags = TeamEvidence.query.filter_by(teamid=session['id'], name=evidence_name).first()
+        submitted_connections = TeamEvidenceConnection.query.filter(and_(\
+            or_(TeamEvidenceConnection.had == evidence_name, TeamEvidenceConnection.found == evidence_name \
+                ), TeamEvidenceConnection.teamid == session['id'])).all()
+
+        if submitted_flags == None:
+            error["error"] = "Evidence does not exist"
+        else:
+            db.session.delete(submitted_flags)
+            for c in submitted_connections:
+                db.session.delete(c)
+            db.session.commit()
+
+    else:
+        error["error"] = "No name or flag given"
+
+    return json.dumps(error)
+
+@challenges.route('/addconnection', methods=['POST'])
+def addconnection():
+    if not ctftime():
+        if view_after_ctf():
+            pass
+        else:
+            return redirect('/')
+    error = {}
+    if 'evidence-name1' in request.form.keys() and 'evidence-name1' in request.form.keys():
+        evidence_name1 = str(request.form['evidence-name1'])
+        evidence_name2 = str(request.form['evidence-name2'])
+
+        has_evidence_name1 = TeamEvidence.query.filter_by(teamid=session['id'], name=evidence_name1).first()
+        has_evidence_name2 = TeamEvidence.query.filter_by(teamid=session['id'], name=evidence_name2).first()
+
+        if has_evidence_name1 == None or has_evidence_name2 == None:
+            if has_evidence_name1 == None:
+                error["error"] = "Evidence name 1 does not exist"
+            elif has_evidence_name2 == None:
+                error["error"] = "Evidence name 2 does not exist"
+        else:
+            submitted_connections = TeamEvidenceConnection.query.filter_by(teamid=session['id'], \
+                had=has_evidence_name1.id, found=has_evidence_name2.id).first()
+
+            if submitted_connections != None:
+                error["error"] = "Connection already exists"
+            else:
+                db.session.add(TeamEvidenceConnection(session["id"], has_evidence_name1.id, has_evidence_name2.id))
+                db.session.commit()
+
+    else:
+        error["error"] = "No evidence given"
+
+    return json.dumps(error)
 
 @challenges.route('/chals', methods=['GET'])
 def chals():
@@ -45,7 +182,7 @@ def chals():
         return jsonify(json)
     else:
         db.session.close()
-        return redirect('/login')
+        return redirect(url_for('auth.login', next='chals'))
 
 
 @challenges.route('/chals/solves')
@@ -56,7 +193,7 @@ def chals_per_solves():
         for chal, count in solves:
             json[chal.chal.name] = count
         return jsonify(json)
-    return redirect('/login')
+    return redirect(url_for('auth.login', next='chals/solves'))
 
 
 @challenges.route('/solves')
@@ -108,7 +245,7 @@ def who_solved(chalid):
 @challenges.route('/chal/<chalid>', methods=['POST'])
 def chal(chalid):
     if not ctftime():
-        return redirect('/challenges')
+        return redirect(url_for('challenges.challenges_view'))
     if authed():
         fails = WrongKeys.query.filter_by(team=session['id'], chalid=chalid).count()
         logger = logging.getLogger('keys')
