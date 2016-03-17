@@ -70,7 +70,8 @@
 
 .input-field {
     width: 100%;
-    background-color: #eee;
+    /*background-color: #eee;*/
+    background-color: #ddd; /* Made input field backgrounds a bit darker */
     border: 2px solid transparent;
     -webkit-transition: background-color 0.3s, border-color 0.3s;
     transition: background-color 0.3s, border-color 0.3s;
