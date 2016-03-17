@@ -220,6 +220,7 @@ class EvidenceConnection(db.Model):
 
 class TeamEvidence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     teamid = db.Column(db.Integer, db.ForeignKey('teams.id'))
     name = db.Column(db.Text)
     type = db.Column(db.Integer)

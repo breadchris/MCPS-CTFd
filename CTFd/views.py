@@ -88,25 +88,24 @@ def setup():
 
             evidence = [
                 ["police_profile", "Police Profile", "{and_so_1t_begins}"],
-                ["victims_phone", "Victims Phone", "{they_were_to0_young_to_d1e}"],
-                ["sd_card", "SD Card", "{sorry_1_dr0ned_out_there}"],
-                ["encrypted_video", "Encrypted Video", "{d3leted_but_not_forgotton}"],
-                ["contacts", "Contacts", "{lol_im_not_a_contact}"],
+                ["caesar_cipher", "Phone Pattern Clue", "{i_love_caesar_sal4ds}"],
+                ["gesture_key_hash", "Gesture Key Hash", "{they_were_to0_young_to_d1e}"],
+                ["victims_contacts", "Victim's Contacts", "{I_just_w4nt_To_phone_home}"],
+                ["victims_history", "Victim's History", "{Back_to_the_H1story}"],
+                ["sd_card", "SD Card", "{m0unting_has_never_b33n_3asier}"],
+                ["sd_card_hidden", "SD Card Hidden Image", "{h1dden_files_4re_soooooo_s3cret}"],
+                ["sd_card_deleted", "SD Card Deleted Image", "{ur_da7a_doesnt_go_away}"],
                 ["agents_wallet", "Agents Wallet", "{h3_h3_m3_c01n5_1n_B175}"],
-                ["emails", "Emails", "{7his_15_n0t_th3_3m41l_u_w4nt}"],
-                ["browser_history", "Browser History", "{a1ways_d3l3t3_ma_h1story}"],
+                ["emails", "Victim's Emails", "{7his_15_n0t_th3_3m41l_u_w4nt}"],
                 ["hacktivists_website", "Hacktivist's Website", "{t3h_h4ckers_sp4c3}"],
                 ["consulting_company_it_portal", "Consulting Company IT Portal", "{SYS_4DM11111111N_P0RTAAAAL}"],
                 ["hacktivists_login", "Hacktivist Login", "{h4ck3r5_log1n_700}"],
                 ["voting_database_corrupt", "Voting Database", "{17_corrup73d_:-(}"],
                 ["personnel_database", "Personnel Database", "{4uthor1zed_per50nnel_0nly}"],
                 ["hacktivists_pcap", "Hacktivist's PCAP", "{much_sh3llsh0ck_m4ny_pack3t_7oo_FTP}"],
-                ["seeded_torrent", "Seeded Torrent", "{7ooo_much_70rren71ng_b4d_four_health}"],
-                ["irc_logs", "IRC Logs", "{700_much_3ncrypted_1337_sp3ak}"],
-                ["stolen_personnel_database", "Stolen Personnel Database", "{h3y_d4ts_min3}"],
-                ["stolen_voting_database", "Stolen Voting Database", "{h33333y_d4ts_min3_7oo}"],
-                ["proof_of_bitcoin_transfer", "Proof of Bitcoin Transfer", "{h4_c4ught_u_r3d_handed}"],
-                ["decryption_software", "Decryption Software", "{d3kryptioni3_is_700_g00d}"]
+                ["encrypted_zip", "Encrypted Zip", "{7ooo_much_Encryption_b4d_four_health}"],
+                ["construct_qr", "Construct QR Code", "{carpet_weaving_grandmaster}"],
+                ["irc_logs", "IRC Logs", "{700_much_3ncrypted_1337_sp3ak}"]
             ]
 
             for e in evidence:
@@ -114,6 +113,7 @@ def setup():
                 db.session.add(eval(e[0]))
             db.session.commit()
 
+            '''
             connections = [
                 [police_profile, victims_phone],
                 [police_profile, sd_card],
@@ -138,6 +138,7 @@ def setup():
                 c = [_.eid for _ in c]
                 db.session.add(EvidenceConnection(*c))
             db.session.commit()
+            '''
 
             db.session.add(ctf_name)
             db.session.add(admin)
