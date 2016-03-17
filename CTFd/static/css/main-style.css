@@ -186,3 +186,11 @@ table{
 	margin-bottom: 0;
 	max-width: 1000px;
 }
+
+.margin-left{
+	margin-left: 1em;
+}
+
+.margin-right{
+	margin-right:1em;	
+}
