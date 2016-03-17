@@ -26,47 +26,116 @@
 
 {% block content %}
 <div class="row">
-  <div class="col-md-4">
-  <div style="margin-left:50px;margin-top: 50px">
-  <div>
-      <h3>View Evidence</h3>
-      <div></div>
+  <div class="col-md-6">
+        <h3 class="chal-nav-title" style="text-align: center">Evidence</h3>
+        <div class="row">
+          <div class="col-md-6">
+            <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#addEvidenceModal">Add Evidence</button>
+          </div>
+          <div class="col-md-6">
+            <button type="button" class="btn btn-default pull-left" data-toggle="modal" data-target="#removeEvidenceModal">Remove Evidence</button>
+          </div>
+        </div>
   </div>
-  <form method="POST" id="add-evidence">
-      <h3>Enter Evidence Name or Flag</h3>
-      <div class="form-group">
-        <label for="flag">Evidence Name/Flag:</label>
-        <input type="text" name="flag"></input>
-      </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-  </form>
-  <br />
-  <form method="POST" id="remove-evidence">
-      <h3>Remove Evidence</h3>
-      <div class="form-group">
-        <label for="evidence-name">Remove Evidence:</label>
-        <input type="text" name="evidence-name"></input>
-      </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-  </form>
-  <br />
-  <form method="POST" id="add-connection">
-      <h3>Enter Evidence Connection</h3>
-      <div class="form-group">
-        <label for="evidence-name1">Evidence Name 1:</label>
-        <input type="text" name="evidence-name1"></input>
-      </div>
-      <div class="form-group">
-        <label for="evidence-name2">Evidence Name 2:</label>
-        <input type="text" name="evidence-name2"></input>
-      </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-  </form>
+  <div class="col-md-6">
+          <h3 class="chal-nav-title" style="text-align: center">Connection</h3>
+        <div class="row">
+          <div class="col-md-6">
+            <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#addConnectionModal">Add Connection</button>
+          </div>
+          <div class="col-md-6">
+            <button type="button" class="btn btn-default pull-left" data-toggle="modal" data-target="#removeConnectionModal">Remove Connection</button>
+          </div>
+        </div>
   </div>
-  </div>
-  <div class="col-md-8">
-    <div id="graph"></div>
-  </div>
+        <div class="modal fade" id="addEvidenceModal" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Add Evidence</h3>
+              </div>
+              <div class="modal-body">
+                <form method="POST" id="add-evidence">
+                <div class="form-group">
+                  <label for="flag">Evidence Name/Flag:</label>
+                  <input type="text" name="flag"></input>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="removeEvidenceModal" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Remove Evidence</h3>
+              </div>
+              <div class="modal-body">
+                <form method="POST" id="remove-evidence">
+                <div class="form-group">
+                  <label for="evidence-name">Evidence Name/Flag:</label>
+                  <input type="text" name="evidence-name"></input>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="addConnectionModal" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Add Connection</h3>
+              </div>
+              <div class="modal-body">
+                <form method="POST" id="add-connection">
+                <div class="form-group">
+                  <label for="evidence-name1">Evidence Name 1:</label>
+                  <input type="text" name="evidence-name1"></input>
+                </div>
+                <div class="form-group">
+                  <label for="evidence-name2">Evidence Name 2:</label>
+                  <input type="text" name="evidence-name2"></input>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="removeConnectionModal" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Remove Connection</h3>
+              </div>
+              <div class="modal-body">
+                <form method="POST" id="remove-connection">
+                <div class="form-group">
+                  <label for="evidence-name1">Evidence Name 1:</label>
+                  <input type="text" name="evidence-name1"></input>
+                </div>
+                <div class="form-group">
+                  <label for="evidence-name2">Evidence Name 2:</label>
+                  <input type="text" name="evidence-name2"></input>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+  <div id="graph"></div>
 </div>
 {% endblock %}
 
@@ -129,6 +198,16 @@ $( "form" ).submit(function( event ) {
           alert(data["error"]);
         }
     });
+  } else if (ele_id == "remove-connection") {
+    $.post("/removeconnection", {"evidence-name1": $this.find('[name="evidence-name1"]').val(), "evidence-name2": $this.find('[name="evidence-name2"]').val()}).done(function(data) {
+        data = JSON.parse(data);
+        if (data["error"] === undefined) {
+          alert("Your evidence connection was removed :3");
+          load_graph();
+        } else {
+          alert(data["error"]);
+        }
+    });
   }
   event.preventDefault();
 });
@@ -137,8 +216,8 @@ window.onload = function() {
 
 load_graph = function() {
   $("#graph").empty();
-  var width = 900,
-      height = 750;
+  var width = $(document).width(),
+      height = $(document).height() - 200;
 
   var svg = d3.select("#graph").append("svg")
       .attr("width", width)

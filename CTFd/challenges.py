@@ -59,6 +59,10 @@ def addevidence():
     error = {}
     if 'flag' in request.form.keys():
         flag = str(request.form['flag'])
+        try:
+            print flag
+        except:
+            pass
         submitted_flags = TeamEvidence.query.filter_by(teamid=session['id'], name=flag).first()
         actual_flags = Evidence.query.filter_by(flag=flag).first()
 
@@ -155,6 +159,41 @@ def addconnection():
                 error["error"] = "Connection already exists"
             else:
                 db.session.add(TeamEvidenceConnection(session["id"], has_evidence_name1.id, has_evidence_name2.id))
+                db.session.commit()
+
+    else:
+        error["error"] = "No evidence given"
+
+    return json.dumps(error)
+
+@challenges.route('/removeconnection', methods=['POST'])
+def removeconnection():
+    if not ctftime():
+        if view_after_ctf():
+            pass
+        else:
+            return redirect('/')
+    error = {}
+    if 'evidence-name1' in request.form.keys() and 'evidence-name1' in request.form.keys():
+        evidence_name1 = str(request.form['evidence-name1'])
+        evidence_name2 = str(request.form['evidence-name2'])
+
+        has_evidence_name1 = TeamEvidence.query.filter_by(teamid=session['id'], name=evidence_name1).first()
+        has_evidence_name2 = TeamEvidence.query.filter_by(teamid=session['id'], name=evidence_name2).first()
+
+        if has_evidence_name1 == None or has_evidence_name2 == None:
+            if has_evidence_name1 == None:
+                error["error"] = "Evidence name 1 does not exist"
+            elif has_evidence_name2 == None:
+                error["error"] = "Evidence name 2 does not exist"
+        else:
+            submitted_connections = TeamEvidenceConnection.query.filter_by(teamid=session['id'], \
+                had=has_evidence_name1.id, found=has_evidence_name2.id).first()
+
+            if submitted_connections == None:
+                error["error"] = "Connection does not exist"
+            else:
+                db.session.delete(submitted_connections)
                 db.session.commit()
 
     else:
