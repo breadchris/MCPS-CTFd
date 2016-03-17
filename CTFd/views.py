@@ -87,6 +87,8 @@ def setup():
             setup = Config('setup', True)
 
             evidence = [
+                ["sample1", "Encrypted Zip", "{N3xt_l3v3l_encryption}"],
+                ["sample2", "Caesar Cipher Sample", "{c1pherz_are_kewl}"],
                 ["police_profile", "Police Profile", "{and_so_1t_begins}"],
                 ["caesar_cipher", "Phone Pattern Clue", "{i_love_caesar_sal4ds}"],
                 ["gesture_key_hash", "Gesture Key Hash", "{they_were_to0_young_to_d1e}"],
