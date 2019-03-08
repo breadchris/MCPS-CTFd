@@ -2,7 +2,7 @@ import os
 
 ##### SERVER SETTINGS #####
 SECRET_KEY = "FKFUUjjkjawkerjweri124983(*)(#*@)%(*@#()%)01"
-SQLALCHEMY_DATABASE_URI = 'sqlite:///ctfd.db'
+SQLALCHEMY_DATABASE_URI = os.environ['JAWSDB_URL']
 SESSION_TYPE = "filesystem"
 SESSION_FILE_DIR = "/tmp/flask_session"
 SESSION_COOKIE_HTTPONLY = True
