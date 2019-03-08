@@ -1,0 +1,43 @@
+evidence:
+  - name: Forknite Forum
+    flag: flag{always_with_the_base_ics}
+  - name: Forknite Software Site
+    flag: flag{lookin_at_ur_warez}
+  - name: Twitter
+    flag: flag{because_we_always_need_a_rot13}
+  - name: Gameplay
+    flag: flag{have_fun_playing_forknite!}
+  - name: Carbone11 Conversation
+    flag: flag{good_talk}
+  - name: Forknite Game
+    flag: flag{good_j0b_gniesrever}
+  - name: Source Code in Page
+    flag: 
+  - name: Nep Fileshare
+    flag: flag{wow_u_found_me!}
+  - name: PDF Forensics
+    flag: flag{pdf_object_$treams_are_cray}
+  - name: Docx Forensics
+    flag: 
+  - name: Password Manager
+    flag: 
+  - name: Blubberfish VM
+    flag: 
+  - name: Bash History
+    flag: 
+  - name: Key logger
+    flag: 
+  - name: Pwn Phone Source
+    flag: 
+  - name: Hrosho's Phone
+    flag: 
+  - name: Deleted Email
+    flag: flag{look_at_you_checking_the_email}
+  - name: Calendar Event // Need to make
+    flag: 
+  - name: Pwn Phone APK
+    flag: 
+  - name: GPS Information
+    flag: 
+  - name: File Recovery // Need to implement
+    flag: 
