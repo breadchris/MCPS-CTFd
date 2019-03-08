@@ -15,7 +15,7 @@ def create_app(config='CTFd.config'):
         from CTFd.models import db, Teams, Solves, Challenges, WrongKeys, Keys, Tags, Files, Tracking
 
         db.init_app(app)
-        db.create_all()
+        #db.create_all()
 
         app.db = db
 
