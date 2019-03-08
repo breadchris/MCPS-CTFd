@@ -10,4 +10,5 @@ six
 itsdangerous
 requests
 PyMySQL
+MySQL-python
 gunicorn
