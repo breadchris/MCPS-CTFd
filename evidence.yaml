@@ -1,43 +1,50 @@
 evidence:
   - name: Forknite Forum
     flag: flag{always_with_the_base_ics}
+    conn: 
   - name: Forknite Software Site
     flag: flag{lookin_at_ur_warez}
+    conn: Forknite Forum
   - name: Twitter
     flag: flag{because_we_always_need_a_rot13}
+    conn: Forknite Forum
   - name: Gameplay
     flag: flag{have_fun_playing_forknite!}
+    conn: Forknite Forum
   - name: Carbone11 Conversation
     flag: flag{good_talk}
+    conn: Forknite Forum
   - name: Forknite Game
     flag: flag{good_j0b_gniesrever}
-  - name: Source Code in Page
-    flag: 
+    conn: Forknite Software Site
   - name: Nep Fileshare
     flag: flag{wow_u_found_me!}
-  - name: PDF Forensics
-    flag: flag{pdf_object_$treams_are_cray}
-  - name: Docx Forensics
-    flag: 
-  - name: Password Manager
-    flag: 
-  - name: Blubberfish VM
-    flag: 
+    conn: Forknite Forum
   - name: Bash History
-    flag: 
-  - name: Key logger
-    flag: 
-  - name: Pwn Phone Source
-    flag: 
-  - name: Hrosho's Phone
-    flag: 
+    flag: flag{no_history_but_nice_lookin}
+    conn: Nep Fileshare
+    conn: Nep Fileshare
   - name: Deleted Email
     flag: flag{look_at_you_checking_the_email}
-  - name: Calendar Event // Need to make
-    flag: 
-  - name: Pwn Phone APK
-    flag: 
-  - name: GPS Information
-    flag: 
-  - name: File Recovery // Need to implement
-    flag: 
+    conn: Nep Fileshare
+  - name: Pwn Phone
+    flag: flag{oh_wow_a_secret_server}
+    conn: Nep Fileshare
+  - name: Hrosho twitter
+    flag: flag{nice_flag_you_got_here}
+    conn: Forknite Forum
+  - name: Easy XOR
+    flag: flag{x0r_is_easy_peasy}
+    conn: Twitter
+  - name: Instructions
+    flag: flag{secrets_are_in_here_too}
+    conn: Forknite Forum
+  - name: On Device
+    flag: flag{in_ur_phone_heh}
+    conn: Pwn Phone
+  - name: Netcat PCAP
+    flag: flag{one_character_at_a_t1m3}
+    conn: Nep Fileshare
+  - name: RSA
+    flag: flag{wow_so_much_3ncryp7ion}
+    conn: Twitter
